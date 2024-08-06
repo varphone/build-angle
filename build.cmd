@@ -119,6 +119,9 @@ if "%GITHUB_WORKFLOW%" neq "" (
 
   %SZIP% a -mx=9 angle-%TARGET_CPU%-%BUILD_DATE%.zip angle || exit /b 1
 
+  echo "ANGLE_COMMIT=%ANGLE_COMMIT%"
+  echo "BUILD_DATE=%BUILD_DATE%"
+
   echo ::set-output name=ANGLE_COMMIT::%ANGLE_COMMIT%
   echo ::set-output name=BUILD_DATE::%BUILD_DATE%
 )
