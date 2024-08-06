@@ -4,11 +4,10 @@ setlocal enabledelayedexpansion
 set PATH=%CD%\depot_tools;%PATH%
 set TARGET_CPU=%1
 
-echo "TARGET_CPU=%TARGET_CPU%"
-
 if "%TARGET_CPU%" == "" ( set TARGET_CPU=x64)
 
-echo "TARGET_CPU=%TARGET_CPU%"
+echo "GITHUB_ACTION=%GITHUB_ACTION%"
+echo "GITHUB_WORKFLOW=%GITHUB_WORKFLOW%"
 
 rem *** check dependencies ***
 
