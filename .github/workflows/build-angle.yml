@@ -17,10 +17,15 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
 
-      - name: build
-        id: build
+      - name: build-x86
+        id: build-x86
         shell: cmd
-        run: call build.cmd
+        run: call build.cmd x86
+
+      - name: build-x64
+        id: build-x64
+        shell: cmd
+        run: call build.cmd x64
 
       - name: release
         id: release
@@ -34,13 +39,24 @@ jobs:
           body: |
             [angle commit](https://github.com/google/angle/commit/${{ steps.build.outputs.ANGLE_COMMIT }})
 
-      - name: upload
-        id: upload
+      - name: upload-x86
+        id: upload-x86
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.release.outputs.upload_url }}
-          asset_path: "angle-${{ steps.build.outputs.BUILD_DATE }}.zip"
-          asset_name: "angle-${{ steps.build.outputs.BUILD_DATE }}.zip"
+          asset_path: "angle-x86-${{ steps.build.outputs.BUILD_DATE }}.zip"
+          asset_name: "angle-x86-${{ steps.build.outputs.BUILD_DATE }}.zip"
+          asset_content_type: application/zip
+
+      - name: upload-x64
+        id: upload-x64
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.release.outputs.upload_url }}
+          asset_path: "angle-x64-${{ steps.build.outputs.BUILD_DATE }}.zip"
+          asset_name: "angle-x64-${{ steps.build.outputs.BUILD_DATE }}.zip"
           asset_content_type: application/zip
