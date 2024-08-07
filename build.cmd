@@ -2,9 +2,23 @@
 setlocal enabledelayedexpansion
 
 set PATH=%CD%\depot_tools;%PATH%
-set TARGET_CPU=%1
+set TARGET_CPU=x64
+set IS_DEBUG=false
+set ANGLE_ENABLE_D3D9=false
+set ANGLE_ENABLE_GL=false
+set ANGLE_ENABLE_VULKAN=false
 
-if "%TARGET_CPU%" == "" ( set TARGET_CPU=x64)
+:ArgsParseLoop
+IF "%1" == "" GOTO ArgsParseFinished
+  if /I "%1" == "--x86" set TARGET_CPU=x86
+  if /I "%1" == "--x64" set TARGET_CPU=x64
+  if /I "%1" == "--debug" set IS_DEBUG=true
+  if /I "%1" == "--enable-d3d9" set ANGLE_ENABLE_D3D9=true
+  if /I "%1" == "--enable-gl" set ANGLE_ENABLE_GL=true
+  if /I "%1" == "--enable-vulkan" set ANGLE_ENABLE_VULKAN=true
+SHIFT
+GOTO ArgsParseLoop
+:ArgsParseFinished
 
 rem *** check dependencies ***
 
@@ -72,7 +86,7 @@ pushd angle.src
 
 set DEPOT_TOOLS_WIN_TOOLCHAIN=0
 call gclient sync || exit /b 1
-call gn gen out/Release --args="target_cpu=\"%TARGET_CPU%\" angle_build_all=false is_debug=false angle_has_frame_capture=false angle_enable_gl=false angle_enable_vulkan=false angle_enable_d3d9=false angle_enable_null=false" || exit /b 1
+call gn gen out/Release --args="target_cpu=\"%TARGET_CPU%\" angle_build_all=false is_debug=%IS_DEBUG% angle_has_frame_capture=false angle_enable_gl=%ANGLE_ENABLE_GL% angle_enable_vulkan=%ANGLE_ENABLE_VULKAN% angle_enable_d3d9=%ANGLE_ENABLE_D3D9% angle_enable_null=false" || exit /b 1
 call git apply -p0 ..\angle.patch || exit /b 1
 call autoninja -C out/Release libEGL libGLESv2 libGLESv1_CM || exit /b 1
 popd
@@ -122,6 +136,6 @@ if "%GITHUB_WORKFLOW%" neq "" (
   echo "ANGLE_COMMIT=%ANGLE_COMMIT%"
   echo "BUILD_DATE=%BUILD_DATE%"
 
-  echo ::set-output name=ANGLE_COMMIT::%ANGLE_COMMIT%
-  echo ::set-output name=BUILD_DATE::%BUILD_DATE%
+  echo "ANGLE_COMMIT=%ANGLE_COMMIT%" >> $GITHUB_OUTPUT
+  echo "BUILD_DATE=%BUILD_DATE%" >> $GITHUB_OUTPUT
 )
