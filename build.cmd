@@ -6,9 +6,6 @@ set TARGET_CPU=%1
 
 if "%TARGET_CPU%" == "" ( set TARGET_CPU=x64)
 
-echo "GITHUB_ACTION=%GITHUB_ACTION%"
-echo "GITHUB_WORKFLOW=%GITHUB_WORKFLOW%"
-
 rem *** check dependencies ***
 
 where /q python.exe || (
